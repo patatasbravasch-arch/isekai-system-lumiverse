@@ -14,7 +14,7 @@ Each chat gets its own System configuration, level, XP, quests, inventory, and r
 
 ## Current scope
 
-This is a first playable build. It has a floating overlay and text notices, without character art, sound, animated transitions, branching choice buttons, or a quest editor. The System model chooses brief notices and small state changes from the recent transcript. Reactions to edited or swiped replies require **React now**. The extension has been syntax checked, but needs a live Lumiverse installation for end-to-end verification.
+This is a first playable build. It has a floating overlay and text notices, without character art, sound, animated transitions, branching choice buttons, or a quest editor. The System model chooses brief notices and small state changes from the recent transcript. Reactions to edited or swiped replies require **React now**. Version 0.1.1 is installed on lumiverse.lunchrelay.win; the live overlay and connection list have been verified. Sidecar generation still requires selecting a connection and turning on automatic reactions in a chat.
 
 ## Files
 
