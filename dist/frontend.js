@@ -1,15 +1,16 @@
 export function setup(ctx) {
   const removeStyle = ctx.dom.addStyle(`
-    .isekai-root{position:fixed;right:20px;bottom:20px;z-index:10000;font:14px/1.45 system-ui,sans-serif;color:#f6efff}
-    .isekai-launcher,.isekai-button{cursor:pointer;border:1px solid #b68cff;background:#39245e;color:#fff;border-radius:12px;padding:9px 13px;font:inherit}
+    .isekai-root{--isekai-accent:#b68cff;--isekai-surface:#211831;--isekai-surface2:#100e1c;position:fixed;right:20px;bottom:20px;z-index:10000;font:14px/1.45 system-ui,sans-serif;color:#f6efff}
+    .isekai-launcher,.isekai-button{cursor:pointer;border:1px solid var(--isekai-accent);background:#39245e;color:#fff;border-radius:12px;padding:9px 13px;font:inherit}
     .isekai-launcher{box-shadow:0 8px 30px #0008;font-weight:700;letter-spacing:.04em}
-    .isekai-panel{width:min(360px,calc(100vw - 24px));max-height:min(78vh,680px);overflow:auto;margin-bottom:10px;border:1px solid #8c6abb;border-radius:18px;background:linear-gradient(155deg,#211831,#100e1c);box-shadow:0 20px 60px #000b;padding:16px;box-sizing:border-box}
+    .isekai-panel{width:min(420px,calc(100vw - 24px));max-height:min(82vh,780px);overflow:auto;margin-bottom:10px;border:1px solid var(--isekai-accent);border-radius:18px;background:linear-gradient(155deg,var(--isekai-surface),var(--isekai-surface2));box-shadow:0 20px 60px #000b;padding:16px;box-sizing:border-box}
     .isekai-panel[hidden]{display:none}.isekai-head{display:flex;align-items:center;justify-content:space-between;gap:8px}.isekai-head h2{font-size:18px;margin:0;color:#e8d6ff}
     .isekai-close{background:none;border:0;color:#ddd;cursor:pointer;font-size:20px}.isekai-sub{font-size:12px;color:#c7b9d5;margin:4px 0 14px}
     .isekai-status{padding:8px 10px;border-radius:10px;background:#ffffff12;font-size:12px;margin-bottom:12px}
-    .isekai-latest{white-space:pre-wrap;background:#ad78ff16;border-left:3px solid #bd8bff;border-radius:8px;padding:10px;margin:12px 0;min-height:48px}
+    .isekai-latest{white-space:pre-wrap;background:#ad78ff16;border-left:3px solid var(--isekai-accent);border-radius:8px;padding:10px;margin:12px 0;min-height:48px}
     .isekai-stats{display:flex;gap:8px;margin:8px 0}.isekai-chip{background:#ffffff12;padding:5px 8px;border-radius:8px;font-size:12px}
     .isekai-root label{display:block;margin:10px 0 4px;font-size:12px;color:#d9c9ec}.isekai-root input:not([type=checkbox]),.isekai-root select,.isekai-root textarea{box-sizing:border-box;width:100%;padding:8px;border:1px solid #705a8e;border-radius:8px;background:#211a30;color:#fff;font:inherit}
+    .isekai-root .isekai-blueprint{min-height:170px}.isekai-hint{font-size:11px;color:#ab9abc;margin:3px 0 8px}.isekai-feedback{min-height:20px;font-size:12px;color:#ead5ff;margin-top:8px;white-space:pre-wrap}
     .isekai-root textarea{min-height:62px;resize:vertical}.isekai-row{display:flex;align-items:center;gap:8px;margin:10px 0}.isekai-row label{margin:0;font-size:13px}
     .isekai-actions{display:flex;gap:8px;margin-top:12px}.isekai-actions button{flex:1}.isekai-button.secondary{background:#282239;border-color:#635578}
     .isekai-list{font-size:12px;color:#e6d9f4;margin:6px 0 10px;padding-left:18px}.isekai-list li{margin:3px 0}.isekai-section{border-top:1px solid #ffffff24;margin-top:16px;padding-top:6px}
@@ -36,10 +37,24 @@ export function setup(ctx) {
         <label>System name</label><input class="isekai-name" maxlength="80">
         <label>Player name</label><input class="isekai-player" maxlength="80">
         <label>Narrator tone</label><select class="isekai-tone"><option value="neutral">Neutral</option><option value="sassy">Sassy</option><option value="mean">Mean</option><option value="warm">Warm</option><option value="ominous">Ominous</option></select>
+        <label>Narrator voice directions</label><textarea class="isekai-voice" maxlength="2000" placeholder="How should the System speak? Catchphrases, humor, boundaries, examples…"></textarea>
+        <label>Notice frequency</label><select class="isekai-frequency"><option value="significant">Significant moments</option><option value="active">More active</option><option value="dramatic">Major turning points only</option></select>
+        <label>Overlay style</label><select class="isekai-theme"><option value="violet">Violet dream</option><option value="rose">Rose romance</option><option value="amber">Amber adventure</option><option value="cyan">Cyan interface</option><option value="emerald">Emerald fantasy</option></select>
         <label>World premise</label><textarea class="isekai-premise" maxlength="1200"></textarea>
-        <label>System rules</label><textarea class="isekai-rules" maxlength="2000"></textarea>
+        <label>Short System rules</label><textarea class="isekai-rules" maxlength="2000"></textarea>
+        <label>Full System blueprint</label><textarea class="isekai-blueprint" maxlength="16000" placeholder="Paste your complete VN_System and VN_System_Controller here, or write a different System for this roleplay."></textarea>
+        <p class="isekai-hint">Private to this chat. The blueprint guides the sidecar; its original tagged blocks are removed from outgoing roleplay prompts when automatic reactions are on.</p>
+        <label>Currency name</label><input class="isekai-currency" maxlength="40" placeholder="Gold">
+        <label>Custom status parameters</label><textarea class="isekai-custom-stats" maxlength="1200" placeholder="For example: Affection, Trust, Route Status, Reputation…"></textarea>
+        <p class="isekai-hint">Mechanics for this roleplay</p>
+        <div class="isekai-row"><input type="checkbox" class="isekai-mechanic-missions" id="isekai-mechanic-missions"><label for="isekai-mechanic-missions">Missions</label></div>
+        <div class="isekai-row"><input type="checkbox" class="isekai-mechanic-relationships" id="isekai-mechanic-relationships"><label for="isekai-mechanic-relationships">Characters &amp; Routes</label></div>
+        <div class="isekai-row"><input type="checkbox" class="isekai-mechanic-shop" id="isekai-mechanic-shop"><label for="isekai-mechanic-shop">Shop</label></div>
+        <div class="isekai-row"><input type="checkbox" class="isekai-mechanic-roulette" id="isekai-mechanic-roulette"><label for="isekai-mechanic-roulette">Roulette</label></div>
+        <div class="isekai-row"><input type="checkbox" class="isekai-mechanic-choices" id="isekai-mechanic-choices"><label for="isekai-mechanic-choices">Suggested choices</label></div>
         <div class="isekai-row"><input type="checkbox" class="isekai-adult" id="isekai-adult"><label for="isekai-adult">Adult cast confirmed for mature mechanics</label></div>
         <div class="isekai-actions"><button class="isekai-button isekai-save">Save setup</button><button class="isekai-button secondary isekai-react">React now</button></div>
+        <div class="isekai-feedback" role="status" aria-live="polite"></div>
       </div>
     </section>
     <button class="isekai-launcher" aria-label="Open the System">✦ SYSTEM</button>
@@ -48,8 +63,10 @@ export function setup(ctx) {
   const panel = q('.isekai-panel')
   let state = null
   let toastTimer = null
+  let saving = false
   let connections = []
   const status = message => { q('.isekai-status').textContent = message }
+  const feedback = message => { q('.isekai-feedback').textContent = message }
   const toast = message => {
     const old = q('.isekai-toast'); if (old) old.remove()
     const box = ctx.dom.createElement('div', { className: 'isekai-toast' })
@@ -87,10 +104,12 @@ export function setup(ctx) {
   const render = () => {
     if (!state) return
     q('.isekai-head h2').textContent = `✦ ${state.name}`
+    const palette = { violet: ['#b68cff','#211831','#100e1c'], rose: ['#ff89b6','#39202e','#1c1019'], amber: ['#ffc46b','#392817','#1c140d'], cyan: ['#6bdded','#16313b','#0b1922'], emerald: ['#7fdfab','#1b3329','#0d1b17'] }[state.theme] || ['#b68cff','#211831','#100e1c']
+    wrapper.style.setProperty('--isekai-accent', palette[0]); wrapper.style.setProperty('--isekai-surface', palette[1]); wrapper.style.setProperty('--isekai-surface2', palette[2])
     status(state.enabled ? (state.connectionId ? 'Automatic reactions on' : 'Choose a System connection to start') : 'Automatic reactions off')
     q('.isekai-level').textContent = `Level ${state.level}`
     q('.isekai-xp').textContent = `${state.xp} / ${state.level * 100} XP`
-    q('.isekai-gold').textContent = `${state.gold || 0} Gold`
+    q('.isekai-gold').textContent = `${state.gold || 0} ${state.currencyName || 'Gold'}`
     q('.isekai-tickets').textContent = `${state.tickets || 0} Tickets`
     q('.isekai-latest').textContent = state.history?.at(-1)?.notice || 'No System notices yet.'
     q('.isekai-genres').textContent = state.genres?.join(' · ') || 'Not assigned yet'
@@ -101,7 +120,7 @@ export function setup(ctx) {
     fillList('.isekai-flags', state.flags || [], 'None yet')
     fillList('.isekai-inventory', state.inventory || [], 'Empty')
     fillCards('.isekai-shop', (state.shop || []).filter(x => x.stock > 0), 'No offers yet', (card, x) => {
-      line(card, 'strong', `${x.name} · ${x.price} Gold`); line(card, 'small', x.effect)
+      line(card, 'strong', `${x.name} · ${x.price} ${state.currencyName || 'Gold'}`); line(card, 'small', x.effect)
       const buy = ctx.dom.createElement('button', { className: 'isekai-button secondary' }); buy.textContent = `Buy (${x.stock} left)`
       buy.disabled = state.gold < x.price; buy.addEventListener('click', () => ctx.sendToBackend({ type: 'action', action: 'buy', id: x.id, chatId: state.chatId }))
       card.appendChild(buy)
@@ -110,7 +129,7 @@ export function setup(ctx) {
     if (state.roulette?.pool?.length) {
       const card = ctx.dom.createElement('div', { className: 'isekai-card' })
       line(card, 'strong', state.roulette.name)
-      line(card, 'small', `${state.roulette.cost} Gold or 1 Ticket · ${state.roulette.pool.length} possible rewards`)
+      line(card, 'small', `${state.roulette.cost} ${state.currencyName || 'Gold'} or 1 Ticket · ${state.roulette.pool.length} possible rewards`)
       const spin = ctx.dom.createElement('button', { className: 'isekai-button secondary' }); spin.textContent = 'Spin'
       spin.disabled = state.tickets < 1 && state.gold < state.roulette.cost
       spin.addEventListener('click', () => ctx.sendToBackend({ type: 'action', action: 'spin', chatId: state.chatId }))
@@ -123,8 +142,15 @@ export function setup(ctx) {
     q('.isekai-name').value = state.name || ''
     q('.isekai-player').value = state.playerName || ''
     q('.isekai-tone').value = state.tone || 'neutral'
+    q('.isekai-voice').value = state.narratorInstructions || ''
+    q('.isekai-frequency').value = state.frequency || 'significant'
+    q('.isekai-theme').value = state.theme || 'violet'
     q('.isekai-premise').value = state.premise || ''
     q('.isekai-rules').value = state.rules || ''
+    q('.isekai-blueprint').value = state.blueprint || ''
+    q('.isekai-currency').value = state.currencyName || 'Gold'
+    q('.isekai-custom-stats').value = state.customStats || ''
+    for (const key of ['missions', 'relationships', 'shop', 'roulette', 'choices']) q(`.isekai-mechanic-${key}`).checked = state.mechanics?.[key] !== false
     renderConnections()
   }
   const initialize = () => { state = null; status('Loading chat…'); ctx.sendToBackend({ type: 'init' }) }
@@ -136,27 +162,34 @@ export function setup(ctx) {
     const enabled = q('.isekai-enabled').checked
     if (enabled && !connectionId) return status('Choose a System connection first.')
     if (q('.isekai-review-enabled').checked && !q('.isekai-review-connection').value) return status('Choose a Jev review connection first.')
-    status('Saving…')
+    saving = true; feedback('Saving setup…')
     ctx.sendToBackend({ type: 'save', chatId: state.chatId, patch: {
       enabled, inject: q('.isekai-inject').checked, connectionId,
       reviewEnabled: q('.isekai-review-enabled').checked, reviewConnectionId: q('.isekai-review-connection').value,
       adultConfirmed: q('.isekai-adult').checked, playerName: q('.isekai-player').value,
       name: q('.isekai-name').value, tone: q('.isekai-tone').value,
-      premise: q('.isekai-premise').value, rules: q('.isekai-rules').value
+      premise: q('.isekai-premise').value, rules: q('.isekai-rules').value,
+      narratorInstructions: q('.isekai-voice').value, blueprint: q('.isekai-blueprint').value,
+      currencyName: q('.isekai-currency').value, customStats: q('.isekai-custom-stats').value,
+      frequency: q('.isekai-frequency').value, theme: q('.isekai-theme').value,
+      mechanics: Object.fromEntries(['missions', 'relationships', 'shop', 'roulette', 'choices'].map(key => [key, q(`.isekai-mechanic-${key}`).checked]))
     } })
   })
   q('.isekai-react').addEventListener('click', () => {
     if (!state) return status('Open a roleplay chat first.')
-    status('The System is thinking…')
+    feedback('The System is thinking… This may take two model calls when Jev review is enabled.')
     ctx.sendToBackend({ type: 'react', chatId: state.chatId, force: true })
   })
   const unsubBackend = ctx.onBackendMessage(payload => {
     if (payload?.type === 'connections') { connections = payload.connections || []; renderConnections() }
     if (payload?.type === 'state' || payload?.type === 'notice') {
       state = payload.state; render()
+      feedback(saving ? 'Setup saved.' : payload.type === 'notice' ? 'System notice received.' : 'System state updated. An ordinary turn may produce no notice.')
+      saving = false
       if (payload.type === 'notice') toast(payload.state.history.at(-1).notice)
     }
-    if (payload?.type === 'error') status(payload.error)
+    if (payload?.type === 'warning') feedback(payload.warning)
+    if (payload?.type === 'error') { saving = false; status(payload.error); feedback(`Error: ${payload.error}`) }
   })
   const unsubGeneration = ctx.events.on('GENERATION_ENDED', payload => {
     if (payload?.error || !payload?.messageId || !state?.enabled || !state?.connectionId || payload.chatId !== state.chatId) return
