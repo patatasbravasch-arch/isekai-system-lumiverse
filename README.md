@@ -15,13 +15,14 @@ Each chat gets its own System configuration and persistent level, XP, Gold, Tick
 
 ## Current scope
 
-Version 0.2.3 has genre-aware overlay sections and deterministic Gold spending, Shop purchases, and weighted Roulette rewards. Shop and Roulette effects are tracked as item descriptions and shared as continuity facts; they do not directly mutate the roleplay transcript. Choices are suggestions, not restrictions. Adult mechanics require the player to confirm an adult cast in that chat, and the sidecar is instructed to suppress them whenever ages or scenario suitability are uncertain. The extension still has text notices rather than character art, sound, or animated transitions. Reactions to edited or swiped replies require **React now**. The live overlay and connection list have been verified; model generation and Jev review depend on the chosen connections.
+Version 0.3.0 has genre-aware overlay sections and deterministic Gold spending, Shop purchases, and weighted Roulette rewards. Shop and Roulette effects are tracked as item descriptions and shared as continuity facts; they do not directly mutate the roleplay transcript. Choices are suggestions, not restrictions. Adult mechanics require the player to confirm an adult cast in that chat, and the sidecar is instructed to suppress them whenever ages or scenario suitability are uncertain. The extension still has text notices rather than character art, sound, or animated transitions. Reactions to edited or swiped replies require **React now**. A malformed System response is retried once as strict JSON; a malformed Jev review falls back to the valid System result. The overlay shows progress and errors beside React now. Each chat can customize its full VN blueprint, narrator voice, notice frequency, currency label, status parameters, enabled mechanics, and overlay style.
 
 ## Files
 
 - `spindle.json`: extension manifest
 - `dist/backend.js`: per-chat state, sidecar generation, and prompt bridge
 - `dist/frontend.js`: floating overlay and automatic event handling
+
 
 
 
