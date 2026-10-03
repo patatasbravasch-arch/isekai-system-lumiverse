@@ -152,7 +152,9 @@ async function react(chatId, messageId, userId, force = false) {
     if (!force && !state.enabled) return
     if (!state.connectionId) throw new Error('Choose a separate System connection first.')
     const connections = await spindle.connections.list(userId)
-    if (!connections.some(c => c.id === state.connectionId)) throw new Error('The selected System connection is unavailable.')
+    const systemConnection = connections.find(c => c.id === state.connectionId)
+    if (!systemConnection) throw new Error('The selected System connection is unavailable.')
+    if (!systemConnection.model) throw new Error('The selected System connection has no model configured.')
     const all = await spindle.chat.getMessages(chat.id)
     const latest = [...all].reverse().find(m => m.role === 'assistant')
     if (!latest) throw new Error('There is no roleplay reply to react to yet.')
@@ -165,6 +167,8 @@ async function react(chatId, messageId, userId, force = false) {
     const result = await spindle.generate.raw({
       userId,
       connection_id: state.connectionId,
+      provider: systemConnection.provider,
+      model: systemConnection.model,
       messages: [
         { role: 'system', content: systemPrompt(state) },
         { role: 'user', content: `Established System state: ${known}\n\nRecent roleplay:\n${recent}` }
@@ -175,8 +179,11 @@ async function react(chatId, messageId, userId, force = false) {
     let outcome = extractJson(result.content)
     if (state.reviewEnabled) {
       if (!state.reviewConnectionId) throw new Error('Choose a Jev review connection or turn review off.')
-      if (!connections.some(c => c.id === state.reviewConnectionId)) throw new Error('The Jev review connection is unavailable.')
+      const reviewConnection = connections.find(c => c.id === state.reviewConnectionId)
+      if (!reviewConnection) throw new Error('The Jev review connection is unavailable.')
+      if (!reviewConnection.model) throw new Error('The Jev review connection has no model configured.')
       const reviewed = await spindle.generate.raw({ userId, connection_id: state.reviewConnectionId,
+        provider: reviewConnection.provider, model: reviewConnection.model,
         messages: [
           { role: 'system', content: 'Review this VN System JSON against the transcript and prior state. Correct unsupported knowledge, arbitrary rewards, continuity errors, forced player actions, and adult content without confirmed adult cast. Preserve the same JSON schema. Return ONLY the corrected JSON object.' },
           { role: 'user', content: `Recent roleplay:\n${recent}\n\nEstablished state:\n${known}\n\nProposed update:\n${JSON.stringify(outcome)}` }
