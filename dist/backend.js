@@ -189,6 +189,7 @@ async function react(chatId, messageId, userId, force = false) {
       reasoning: { source: 'off' }
     })
     let outcome
+    let recoveredByJev = false
     try { outcome = extractJson(result.content) } catch {
       const repair = await spindle.generate.raw({ userId, connection_id: state.connectionId,
         provider: systemConnection.provider, model: systemConnection.model,
@@ -196,9 +197,20 @@ async function react(chatId, messageId, userId, force = false) {
           ...(cleanText(result.content, 8000) ? [{ role: 'assistant', content: cleanText(result.content, 8000) }] : []),
           { role: 'user', content: 'Your previous response could not be parsed. Return one SHORT valid JSON object only. If no important System event occurred, return {"notice":""}. Do not explain or use markdown.' }],
         parameters: { temperature: 0, max_tokens: 1800 }, reasoning: { source: 'off' } })
-      try { outcome = extractJson(repair.content) } catch { throw new Error('System model returned invalid JSON twice. Try a different System connection or simplify the blueprint.') }
+      try { outcome = extractJson(repair.content) } catch {
+        if (!state.reviewEnabled || !state.reviewConnectionId) throw new Error('System model returned invalid JSON twice. Try a different System connection or simplify the blueprint.')
+        const rescueConnection = connections.find(c => c.id === state.reviewConnectionId)
+        if (!rescueConnection?.model) throw new Error('System model returned invalid JSON and the Jev connection is unavailable.')
+        const rescue = await spindle.generate.raw({ userId, connection_id: rescueConnection.id,
+          provider: rescueConnection.provider, model: rescueConnection.model,
+          messages: [
+            { role: 'system', content: systemPrompt(state) + '\nThe first model failed to produce JSON. Recover a minimal valid System JSON update from the transcript. Return only JSON.' },
+            { role: 'user', content: `Established System state: ${known}\n\nRecent roleplay:\n${recent}` }
+          ], parameters: { temperature: 0.1, max_tokens: 1800 }, reasoning: { source: 'off' } })
+        try { outcome = extractJson(rescue.content); recoveredByJev = true } catch { throw new Error('Neither System nor Jev returned usable JSON. Try another connection or simplify the blueprint.') }
+      }
     }
-    if (state.reviewEnabled) {
+    if (state.reviewEnabled && !recoveredByJev) {
       if (!state.reviewConnectionId) throw new Error('Choose a Jev review connection or turn review off.')
       const reviewConnection = connections.find(c => c.id === state.reviewConnectionId)
       if (!reviewConnection) throw new Error('The Jev review connection is unavailable.')
