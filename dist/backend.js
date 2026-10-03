@@ -260,8 +260,17 @@ spindle.onFrontendMessage(async (payload, userId) => {
 spindle.registerInterceptor(async (messages, context) => {
   if (!context?.chatId) return messages
   const state = await load(context.chatId, context.userId)
-  if (!state.enabled || !state.inject || !state.history.length) return messages
+  if (!state.enabled) return messages
+  const cleaned = messages.map(message => {
+    if (typeof message.content !== 'string' || !/<VN_System(?:_Controller)?>/i.test(message.content)) return message
+    const content = message.content
+      .replace(/<VN_System>[\s\S]*?<\/VN_System>/gi, '')
+      .replace(/<VN_System_Controller>[\s\S]*?<\/VN_System_Controller>/gi, '')
+      .trim()
+    return { ...message, content }
+  }).filter(message => message.content !== '')
+  if (!state.inject || !state.history.length) return cleaned
   const items = state.inventory.map(name => { const detail = state.inventoryDetails.find(x => x.name === name); return detail ? `${name} (${detail.effect})` : name }).join('; ') || 'empty'
   const summary = `Established VN System continuity for ${state.playerName}: Gold ${state.gold}; genres ${state.genres.join(', ') || 'unknown'}; active missions ${state.quests.join('; ') || 'none'}; inventory ${items}; flags ${state.flags.join('; ') || 'none'}. The System is a separate private sidecar. Do not invent, narrate, or display System UI, values, rewards, choices, or notices. Use these established facts only when relevant to normal scene continuity. The player retains full agency.`
-  return { messages: [{ role: 'system', content: summary }, ...messages], breakdown: [{ messageIndex: 0, name: 'Isekai System state' }] }
+  return { messages: [{ role: 'system', content: summary }, ...cleaned], breakdown: [{ messageIndex: 0, name: 'VN System continuity' }] }
 }, 150)
