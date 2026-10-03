@@ -1,11 +1,11 @@
 {
-  "version": "0.1.1",
+  "version": "0.2.0",
   "name": "Isekai System",
   "identifier": "isekai_system",
   "author": "Codex",
   "github": "https://github.com/patatasbravasch-arch/isekai-system-lumiverse",
   "homepage": "https://github.com/patatasbravasch-arch/isekai-system-lumiverse",
-  "description": "A per-chat VN-style System sidecar with its own LLM connection, narrator voice, overlay, and roleplay prompt bridge.",
+  "description": "A per-chat VN System sidecar with genre-aware overlays, routes, Gold, Shop, Roulette, optional Jev review, and a roleplay prompt bridge.",
   "permissions": ["generation", "chats", "chat_mutation", "interceptor", "app_manipulation"],
   "entry_backend": "dist/backend.js",
   "entry_frontend": "dist/frontend.js"
